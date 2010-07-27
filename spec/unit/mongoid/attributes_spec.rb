@@ -643,4 +643,40 @@ describe Mongoid::Attributes do
 
   end
 
+  describe "updating multiparameter attributes" do
+    before do
+      @person = Person.new
+    end
+
+    it "should be able to update a date from valid multi attributes" do
+      attributes = {'dob(1i)' => '2004', 'dob(2i)' => '11', 'dob(3i)' => '29'}
+      @person.attributes = attributes
+      @person.dob.should == Date.new(2004,11,29)
+    end
+    it "should be able to update a time from valid multi attributes" do
+      attributes = {'lunch_time(1i)' => '2004', 'lunch_time(2i)' => '6', 'lunch_time(3i)' => '19',
+        'lunch_time(4i)' => '5', 'lunch_time(5i)' => '6', 'lunch_time(6i)' => '7'}
+      @person.attributes = attributes
+      @person.lunch_time.should == Time.local(2004,6,19,5,6,7)
+    end
+
+    it "should be able to update a time from valid multi attributes with empty seconds" do
+      attributes = {'lunch_time(1i)' => '2004', 'lunch_time(2i)' => '6', 'lunch_time(3i)' => '19',
+        'lunch_time(4i)' => '5', 'lunch_time(5i)' => '6', 'lunch_time(6i)' => ''}
+      @person.attributes = attributes
+      @person.lunch_time.should == Time.local(2004,6,19,5,6,0)
+    end
+    it "should be able to update a date as nil from empty multi attributes" do
+      attributes = {'dob(1i)' => '', 'dob(2i)' => '', 'dob(3i)' => ''}
+      @person.attributes = attributes
+      @person.dob.should be_nil
+    end
+    it "should be able to update a time as nil from empty multi attributes" do
+      attributes = {'lunch_time(1i)' => '', 'lunch_time(2i)' => '', 'lunch_time(3i)' => '',
+        'lunch_time(4i)' => '', 'lunch_time(5i)' => '', 'lunch_time(6i)' => ''}
+      @person.attributes = attributes
+      @person.lunch_time.should be_nil
+    end
+  end
+
 end
